@@ -3,7 +3,9 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
+    id("com.google.devtools.ksp") version "1.9.0-1.0.13"
 }
+
 
 android {
     namespace = "com.example.upasthithai"
@@ -57,6 +59,22 @@ android {
     }
 }
 
+configurations.all {
+    resolutionStrategy {
+        force(
+            "androidx.camera:camera-core:1.3.3",
+            "androidx.camera:camera-camera2:1.3.3",
+            "androidx.camera:camera-lifecycle:1.3.3",
+            "androidx.camera:camera-view:1.3.3",
+            "androidx.camera:camera-extensions:1.3.3",
+            "androidx.camera:camera-video:1.3.3",
+            "androidx.camera:camera-mlkit-vision:1.3.3",
+            "androidx.camera:camera-encoding:1.3.3",
+            "androidx.camera.featurecombinationquery:featurecombinationquery:1.3.3"
+        )
+    }
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -77,6 +95,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx")
     implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
     implementation(libs.androidx.espresso.core)
+    //implementation(libs.androidx.camera.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -85,5 +104,26 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(kotlin("script-runtime"))
+
+    // Add these to override camera version
+    implementation("androidx.camera:camera-core:1.3.3")
+    implementation("androidx.camera:camera-camera2:1.3.3")
+    implementation("androidx.camera:camera-lifecycle:1.3.3")
+    implementation("androidx.camera:camera-view:1.3.3")
+    implementation("androidx.camera:camera-extensions:1.3.3")
+
+
+    // ML Kit Face Detection
+    implementation("com.google.mlkit:face-detection:16.1.6")
+
+// Room Database
+    implementation("androidx.room:room-runtime:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+
+// Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("com.google.code.gson:gson:2.10.1")
+
 
 }

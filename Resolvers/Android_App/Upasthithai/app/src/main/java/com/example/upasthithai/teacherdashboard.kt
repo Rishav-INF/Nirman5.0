@@ -16,7 +16,7 @@ class teacherdashboard : AppCompatActivity() {
 
         val requests = findViewById<TextView>(R.id.requestsText_teacher)
         val map = findViewById<TextView>(R.id.liveMapText_teacher)
-        val hoursWorkedTextView = findViewById<TextView>(R.id.timeFetched)
+//        val hoursWorkedTextView = findViewById<TextView>(R.id.timeFetched)
         val takeattendance = findViewById<TextView>(R.id.attendanceText)
 
         // Click listeners
@@ -42,6 +42,6 @@ class teacherdashboard : AppCompatActivity() {
         val seconds = hoursWorked % 60
 
         val workedTimeFormatted = String.format("%02d:%02d:%02d", hours, minutes, seconds)
-        hoursWorkedTextView.text = workedTimeFormatted
+        //hoursWorkedTextView.text = workedTimeFormatted
     }
 }

@@ -14,6 +14,6 @@
     </string-array>
 
     <string name="title_activity_maps">MapsActivity</string>
-    <string name = "maps">API_KEY_DO_MUJHKO</string>
-    <string name = "gemini">API_KEY_DO_MUJHKO</string>
+    <string name = "maps">AIzaSyDmtScTQOHJTYTdNcKgq76ilXwUtCshyL8</string>
+    <string name = "gemini">AIzaSyCUBy82e-_oVoNUzjf99iV2D5Pnezrjz-U</string>
 </resources>
