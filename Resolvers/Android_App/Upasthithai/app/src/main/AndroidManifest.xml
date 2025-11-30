@@ -54,6 +54,8 @@
         <activity android:name=".studentdashboard" />
         <activity android:name=".MarkAttendance" />
         <activity android:name=".demo" />
+        <activity android:name=".analytics.studentAnalytics"/>
+        <activity android:name=".analytics.teacherAnalytics"/>
 
         <activity
             android:name=".LoginActivity"

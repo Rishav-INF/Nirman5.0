@@ -1,310 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/light_gray">
+    android:background="@drawable/bg_gradient">
 
     <LinearLayout
+        android:id="@+id/rootTeacherLayout"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
-        <!-- Analytics Overview -->
+        <!-- Title -->
+        <TextView
+            android:id="@+id/teacherAnalyticsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Teacher Analytics"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            android:padding="10dp"/>
+
+        <!-- Current Teaching Information Card -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/currentTeachCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginTop="14dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="8dp">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:padding="16dp"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Analytics Overview"
-                    android:textSize="18sp"
+                    android:id="@+id/currentSubjectLabel"
+                    android:text="Current Subject:"
+                    android:textSize="16sp"
                     android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/currentSubjectValue"
+                    android:text="--"
                     android:textStyle="bold"
-                    android:layout_marginBottom="8dp"/>
-
-                <TextView
+                    android:textSize="22sp"
+                    android:textColor="@color/purple"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="• Total Views: 1,245"
-                    android:textSize="14sp"
-                    android:textColor="@color/dark_gray"
-                    android:layout_marginBottom="4dp"/>
+                    android:paddingTop="4dp" />
 
                 <TextView
+                    android:id="@+id/currentClassLabel"
+                    android:text="Current Class:"
+                    android:layout_marginTop="10dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="• Average Session Time: 3m 25s"
-                    android:textSize="14sp"
-                    android:textColor="@color/dark_gray"
-                    android:layout_marginBottom="4dp"/>
+                    android:layout_height="wrap_content" />
 
                 <TextView
+                    android:id="@+id/currentClassValue"
+                    android:text="--"
+                    android:textStyle="bold"
+                    android:textSize="22sp"
+                    android:textColor="@color/purple"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="• Most Viewed: Weekly Attendance Trend"
-                    android:textSize="14sp"
-                    android:textColor="@color/dark_gray"
-                    android:layout_marginBottom="4dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="• Engagement Rate: 78%"
-                    android:textSize="14sp"
-                    android:textColor="@color/dark_gray"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Header Section -->
+        <!-- Today's Timetable Card -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/todayTableCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="8dp">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:padding="16dp"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Today's Attendance"
-                    android:textSize="18sp"
-                    android:textColor="@color/black"
+                    android:id="@+id/todayTimetableTitle"
+                    android:text="Today's Timetable"
                     android:textStyle="bold"
-                    android:layout_marginBottom="8dp"/>
+                    android:textSize="20sp"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="3">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="8dp">
-
-                        <TextView
-                            android:id="@+id/tvPresent"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            tools:text="25"
-                            android:textSize="24sp"
-                            android:textColor="@color/green"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Present"
-                            android:textSize="14sp"
-                            android:textColor="@color/dark_gray"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="8dp">
-
-                        <TextView
-                            android:id="@+id/tvAbsent"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            tools:text="5"
-                            android:textSize="24sp"
-                            android:textColor="@color/red"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Absent"
-                            android:textSize="14sp"
-                            android:textColor="@color/dark_gray"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="8dp">
-
-                        <TextView
-                            android:id="@+id/tvAttendancePercent"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            tools:text="83%"
-                            android:textSize="24sp"
-                            android:textColor="@color/blue"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Overall"
-                            android:textSize="14sp"
-                            android:textColor="@color/dark_gray"/>
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Weekly Attendance Trend -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp"
-            android:layout_marginBottom="16dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Weekly Attendance Trend"
-                    android:textSize="18sp"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp"/>
-
-                <LinearLayout
-                    android:id="@+id/weeklyChartContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:id="@+id/todayTimetableList"
                     android:orientation="vertical"
-                    android:background="@color/white">
-                </LinearLayout>
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Monthly Attendance Chart -->
+        <!-- Subject Attendance Summary -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/subjectAttendanceCard"
+            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp"
-            android:layout_marginBottom="16dp">
+            app:cardCornerRadius="18dp"
+            app:cardElevation="8dp">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:padding="16dp"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Monthly Attendance"
-                    android:textSize="18sp"
-                    android:textColor="@color/black"
+                    android:text="Subject Wise Attendance"
+                    android:textSize="20sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="16dp"/>
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
                 <LinearLayout
-                    android:id="@+id/monthlyChartContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:id="@+id/attendanceSummaryList"
                     android:orientation="vertical"
-                    android:background="@color/white">
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Subject-wise Attendance -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp"
-            android:layout_marginBottom="16dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Subject-wise Attendance"
-                    android:textSize="18sp"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp"/>
-
-                <LinearLayout
-                    android:id="@+id/subjectChartContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:orientation="horizontal"
-                    android:background="@color/white">
-                </LinearLayout>
+                    android:paddingTop="10dp"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Class Comparison -->
-        <androidx.cardview.widget.CardView
+        <!-- Calendar -->
+        <Button
+            android:id="@+id/calendarButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Class Comparison"
-                    android:textSize="18sp"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp"/>
-
-                <LinearLayout
-                    android:id="@+id/classChartContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:orientation="vertical"
-                    android:background="@color/white">
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+            android:layout_marginTop="26dp"
+            android:layout_height="50dp"
+            android:text="Open Calendar"
+            android:backgroundTint="@color/purple"
+            android:textColor="@color/white"
+            android:textSize="18sp"/>
     </LinearLayout>
 </ScrollView>

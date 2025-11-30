@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.upasthithai.analytics.studentAnalytics
 
 class studentdashboard : AppCompatActivity() {
 
@@ -13,11 +14,11 @@ class studentdashboard : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.student_dashboard) // Use your XML filename
-
+        val analytics =findViewById<TextView>(R.id.analyticsButton)
         val attendanceCardText = findViewById<TextView>(R.id.attendanceGive)
         val liveMapText = findViewById<TextView>(R.id.liveMapText)
         val requestsText = findViewById<TextView>(R.id.requestsText)
-        val hoursWorkedTextView = findViewById<TextView>(R.id.timeFetched_student)
+        //val hoursWorkedTextView = findViewById<TextView>(R.id.timeFetched_student)
         val markattendance = findViewById<TextView>(R.id.attendanceGive)
         // Navigate to Live Map Activity
         liveMapText.setOnClickListener {
@@ -27,6 +28,10 @@ class studentdashboard : AppCompatActivity() {
 
         markattendance.setOnClickListener{
             val intent = Intent(this, MarkAttendance::class.java)
+            startActivity(intent)
+        }
+        analytics.setOnClickListener {
+            val intent = Intent(this, studentAnalytics::class.java)
             startActivity(intent)
         }
 
@@ -51,6 +56,6 @@ class studentdashboard : AppCompatActivity() {
         val seconds = hours_worked % 60
 
         val workedTimeFormatted = String.format("%02d:%02d:%02d", hours, minutes, seconds)
-        hoursWorkedTextView.text = workedTimeFormatted
+        //hoursWorkedTextView.text = workedTimeFormatted
     }
 }

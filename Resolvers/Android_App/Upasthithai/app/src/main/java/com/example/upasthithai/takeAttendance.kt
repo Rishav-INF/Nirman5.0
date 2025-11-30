@@ -12,8 +12,11 @@ class takeAttendance : AppCompatActivity() {
     private lateinit var btnToggleAttendance: Button
     private lateinit var tvDate: TextView
 
+    // NEW Firebase reference
     private val bleRef: DatabaseReference =
-        FirebaseDatabase.getInstance().getReference("BLE").child("ble_id_1")
+        FirebaseDatabase.getInstance().getReference("NEW")
+            .child("BLE")
+            .child("BLE_1")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,49 +29,49 @@ class takeAttendance : AppCompatActivity() {
         tvDate.text = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
             .format(java.util.Date())
 
-        // Listen for changes in attendance field
-        bleRef.child("attendance").addValueEventListener(object : ValueEventListener {
+        // Listener for SWITCH state changes
+        bleRef.child("SWITCH").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val state = snapshot.getValue(String::class.java) ?: "inactive"
-                updateUI(state)
+                val switchState = snapshot.getValue(String::class.java) ?: "off"
+                updateUI(switchState)
             }
 
             override fun onCancelled(error: DatabaseError) {}
         })
 
-        // Toggle attendance on click
-        btnToggleAttendance.setOnClickListener { toggleAttendance() }
+        // Toggle switch on click
+        btnToggleAttendance.setOnClickListener { toggleAttendanceSwitch() }
     }
 
-    private fun toggleAttendance() {
-        val attendanceRef = bleRef.child("attendance")
-        attendanceRef.get().addOnSuccessListener { snapshot ->
-            val current = snapshot.getValue(String::class.java) ?: "inactive"
-            val newState = if (current == "active") "inactive" else "active"
+    private fun toggleAttendanceSwitch() {
+        val switchRef = bleRef.child("SWITCH")
 
-            attendanceRef.setValue(newState).addOnSuccessListener {
+        switchRef.get().addOnSuccessListener { snapshot ->
+            val current = snapshot.getValue(String::class.java) ?: "off"
+            val newState = if (current == "on") "off" else "on"
+
+            switchRef.setValue(newState).addOnSuccessListener {
                 Toast.makeText(
                     this,
-                    if (newState == "active") "Attendance Started" else "Attendance Stopped",
+                    if (newState == "on") "Attendance Enabled" else "Attendance Disabled",
                     Toast.LENGTH_SHORT
                 ).show()
-            }.addOnFailureListener { e ->
-                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }.addOnFailureListener {
+                Toast.makeText(this, "Failed to update switch!", Toast.LENGTH_SHORT).show()
             }
+
+        }.addOnFailureListener {
+            Toast.makeText(this, "Error reading state!", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun updateUI(state: String) {
-        if (state == "active") {
-            btnToggleAttendance.text = "Attendance Active (Tap to Stop)"
-            btnToggleAttendance.setTextColor(
-                resources.getColor(android.R.color.holo_green_dark, theme)
-            )
+        if (state == "on") {
+            btnToggleAttendance.text = "Attendance ACTIVE (Tap to Stop)"
+            btnToggleAttendance.setBackgroundColor(resources.getColor(android.R.color.holo_green_dark, theme))
         } else {
-            btnToggleAttendance.text = "Activate"
-            btnToggleAttendance.setTextColor(
-                resources.getColor(android.R.color.white, theme)
-            )
+            btnToggleAttendance.text = "Start Attendance"
+            btnToggleAttendance.setBackgroundColor(resources.getColor(android.R.color.holo_red_dark, theme))
         }
     }
 }

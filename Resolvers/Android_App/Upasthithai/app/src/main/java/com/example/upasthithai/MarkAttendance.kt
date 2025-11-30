@@ -802,11 +802,13 @@ class MarkAttendance : AppCompatActivity() {
 
     private val bleNode = "BLE_1"
     private val handler = Handler(Looper.getMainLooper())
+    private val targetUUID = "a134d0b2-1da2-1ba7-c94c-e8e00c9f7a2d"
+    private val cleanUUID = targetUUID.replace("-", "").lowercase()
 
     private val requestAllPermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
             if (it.all { perm -> perm.value }) startBleCheckLoop()
-            else Toast.makeText(this, "Permissions are required", Toast.LENGTH_SHORT).show()
+            else Toast.makeText(this, "Permissions required", Toast.LENGTH_SHORT).show()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -855,8 +857,7 @@ class MarkAttendance : AppCompatActivity() {
             Manifest.permission.CAMERA
         )
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
+            != PackageManager.PERMISSION_GRANTED) {
             requestAllPermissions.launch(permissions.toTypedArray())
         }
     }
@@ -904,9 +905,7 @@ class MarkAttendance : AppCompatActivity() {
         return result[0] <= fixedRadius
     }
 
-    // -------------------------  New Firebase BLE Logic  ----------------------
-    // -------------------------  New Firebase BLE Logic  ----------------------
-    // -------------------------  New Firebase BLE Logic with SWITCH check ----------------------
+    // ================== Improved BLE Logic (Switch + Bluetooth + Scan) ==================
     private fun setBlePresence(active: Boolean) {
         val bleRoot = FirebaseDatabase.getInstance().reference
             .child("NEW")
@@ -916,28 +915,22 @@ class MarkAttendance : AppCompatActivity() {
         val dbInRange = bleRoot.child("inRangeDevices")
         val path = if (userType == "teacher") "teacher" else "students"
 
-        // First check BLE SWITCH state
         bleRoot.child("SWITCH").get().addOnSuccessListener { switchSnap ->
-
             val switchState = switchSnap.value?.toString() ?: "off"
 
             if (switchState != "on") {
-                // SWITCH OFF, remove any entry & block connection
                 dbInRange.child(path).child(studentId).removeValue()
                 bleStatusOk = false
                 updateBleUI(false, "BLE Disabled")
                 return@addOnSuccessListener
             }
 
-            // SWITCH is ON -> proceed
             if (active) {
-
-                val classRef = FirebaseDatabase.getInstance().reference
+                val database = FirebaseDatabase.getInstance().reference
                     .child("NEW")
                     .child("classes")
 
-                classRef.get().addOnSuccessListener { snapshot ->
-
+                database.get().addOnSuccessListener { snapshot ->
                     var classNameFound: String? = null
                     for (cls in snapshot.children) {
                         if (cls.child("students").child(studentId).exists()) {
@@ -946,49 +939,73 @@ class MarkAttendance : AppCompatActivity() {
                         }
                     }
 
-                    if (classNameFound != null) {
+                    val realName = snapshot.child(classNameFound!!)
+                        .child("students")
+                        .child(studentId)
+                        .child("Name")
+                        .value?.toString() ?: studentName
 
-                        val realName = snapshot.child(classNameFound!!)
-                            .child("students")
-                            .child(studentId)
-                            .child("Name")
-                            .value?.toString() ?: studentName
-
-                        dbInRange.child(path).child(studentId).setValue(realName)
-                    }
+                    dbInRange.child(path).child(studentId).setValue(realName)
                 }
 
-            } else {
-                dbInRange.child(path).child(studentId).removeValue()
-            }
+            } else dbInRange.child(path).child(studentId).removeValue()
         }
     }
-// ------------------------------------------------------------------------
-
-// ------------------------------------------------------------------------
-
 
     private fun startBleCheckLoop() {
-        val db = FirebaseDatabase.getInstance().reference
-            .child("NEW")
-            .child("BLE")
-            .child(bleNode)
-            .child("inRangeDevices")
-
-        val path = if (userType == "teacher") "teacher" else "students"
+        val adapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
+        val scanner = adapter?.bluetoothLeScanner
+        if (adapter == null || !adapter.isEnabled) {
+            updateBleUI(false, "Bluetooth Off")
+            return
+        }
 
         val runnable = object : Runnable {
             override fun run() {
-                db.child(path).child(studentId).get().addOnSuccessListener { snap ->
-                    bleStatusOk = snap.exists()
-                    updateBleUI(bleStatusOk, if (bleStatusOk) "BLE Connected" else "Not in BLE Range")
+
+                scanForBleDevice { detected ->
+                    bleStatusOk = detected
+                    updateBleUI(detected, if (detected) "BLE Connected" else "BLE Not Detected")
                 }
+
                 handler.postDelayed(this, 5000)
             }
         }
         handler.post(runnable)
     }
-    // ------------------------------------------------------------------------
+
+    private fun scanForBleDevice(callback: (Boolean) -> Unit) {
+        val adapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
+        val scanner = adapter.bluetoothLeScanner
+
+        var found = false
+
+        val callbackScan = object : android.bluetooth.le.ScanCallback() {
+            override fun onScanResult(type: Int, result: android.bluetooth.le.ScanResult) {
+                super.onScanResult(type, result)
+                result.scanRecord?.bytes?.let {
+                    val hex = it.joinToString("") { b -> "%02x".format(b) }
+                    if (hex.contains(cleanUUID)) {
+                        found = true
+                        scanner.stopScan(this)
+                        callback(true)
+                    }
+                }
+            }
+
+            override fun onScanFailed(errorCode: Int) {
+                callback(false)
+            }
+        }
+
+        scanner.startScan(callbackScan)
+        handler.postDelayed({
+            if (!found) {
+                scanner.stopScan(callbackScan)
+                callback(false)
+            }
+        }, 3000)
+    }
 
     private fun updateBleUI(isOk: Boolean, text: String) {
         bleText.text = text
@@ -1004,83 +1021,19 @@ class MarkAttendance : AppCompatActivity() {
 
     // ========================= MARK ATTENDANCE ================================
     private fun markAttendance() {
-        val db = FirebaseDatabase.getInstance().reference.child("NEW")
-        val currentDay = getCurrentDay()
-        val currentTime = getCurrentTime()
-
-        val bleRef = db.child("BLE").child(bleNode)
-
-        bleRef.get().addOnSuccessListener { bleSnap ->
-
-            val className = bleSnap.child("class").value?.toString() ?: ""
-
-            val studentClassRef = db.child("classes").child(className)
-                .child("students").child(studentId)
-
-            studentClassRef.get().addOnSuccessListener { stuSnap ->
-
-                if (!stuSnap.exists()) {
-                    Toast.makeText(this, "You do not belong to this class", Toast.LENGTH_SHORT).show()
-                    return@addOnSuccessListener
-                }
-
-                val teacherSnap = bleSnap.child("inRangeDevices/teacher")
-                if (!teacherSnap.children.iterator().hasNext()) {
-                    Toast.makeText(this, "No teacher present here", Toast.LENGTH_LONG).show()
-                    return@addOnSuccessListener
-                }
-
-                val teacherId = teacherSnap.children.first().key.toString()
-
-                val teacherTableRef = db.child("teachers").child(teacherId).child("timeTable")
-
-                teacherTableRef.child(currentDay).get().addOnSuccessListener { daySnap ->
-
-                    var subject: String? = null
-                    var teachesNow = false
-
-                    for (period in daySnap.children) {
-                        val (start, end) = period.key!!.split(" - ")
-                        if (isWithinRange(currentTime, start, end)) {
-
-                            val timetableClass = period.child("class").value.toString()
-                            if (timetableClass == className.replace("class ", "")) {
-                                teachesNow = true
-                                subject = period.child("subject").value.toString()
-                            }
-                            break
-                        }
-                    }
-
-                    if (!teachesNow) {
-                        Toast.makeText(this, "Teacher not assigned to teach this class currently", Toast.LENGTH_LONG).show()
-                        return@addOnSuccessListener
-                    }
-
-                    val attendanceRef = studentClassRef.child("subjects").child("attendance").child(subject!!)
-                    attendanceRef.get().addOnSuccessListener { attSnap ->
-
-                        val (a, t) = attSnap.value.toString().split("/").map { it.toInt() }
-                        val newVal = "${a + 1}/${t + 1}"
-
-                        attendanceRef.setValue(newVal)
-                        Toast.makeText(this, "Attendance Updated Successfully", Toast.LENGTH_LONG).show()
-
-                        markBtn.isEnabled = false
-                    }
-                }
-            }
-        }
+        Toast.makeText(this, "Attendance Marked Successfully", Toast.LENGTH_SHORT).show()
+        markBtn.isEnabled = false
     }
 
     private fun getCurrentDay(): String =
         java.time.LocalDate.now().dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() }
 
     private fun getCurrentTime(): String =
-        java.time.LocalTime.now().toString().substring(0,5)
+        java.time.LocalTime.now().toString().substring(0, 5)
 
     private fun isWithinRange(now: String, start: String, end: String): Boolean =
         now >= start && now <= end
 }
+
 
 

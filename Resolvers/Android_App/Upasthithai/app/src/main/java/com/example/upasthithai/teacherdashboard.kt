@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.upasthithai.analytics.teacherAnalytics
 
 class teacherdashboard : AppCompatActivity() {
 
@@ -13,12 +14,11 @@ class teacherdashboard : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.teacher_dashboard)
-
+        val analytics = findViewById<TextView>(R.id.analyticsText)
         val requests = findViewById<TextView>(R.id.requestsText_teacher)
         val map = findViewById<TextView>(R.id.liveMapText_teacher)
 //        val hoursWorkedTextView = findViewById<TextView>(R.id.timeFetched)
         val takeattendance = findViewById<TextView>(R.id.attendanceText)
-
         // Click listeners
         map.setOnClickListener {
             startActivity(Intent(this, MapsActivity::class.java))
@@ -30,6 +30,10 @@ class teacherdashboard : AppCompatActivity() {
 
         takeattendance.setOnClickListener {
             startActivity(Intent(this, takeAttendance::class.java))
+        }
+
+        analytics.setOnClickListener {
+            startActivity(Intent(this, teacherAnalytics::class.java))
         }
 
         // Fetch hours worked safely

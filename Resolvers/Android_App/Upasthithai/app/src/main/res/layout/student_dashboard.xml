@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_gradient"
+    android:background="#FFFFFF"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,11 +15,11 @@
         android:layout_margin="12dp"
         android:layout_marginBottom="16dp">
 
-        <!-- Floating Header with Glassmorphism - Now containing all other cards -->
         <androidx.cardview.widget.CardView
             android:id="@+id/headerCard"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+
             android:alpha="0.95"
             app:cardCornerRadius="24dp"
             app:cardElevation="12dp"
@@ -29,8 +29,8 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/glassmorphism_header"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
                 android:padding="24dp">
 
                 <androidx.cardview.widget.CardView
@@ -49,10 +49,7 @@
                         android:padding="20dp"
                         app:srcCompat="@drawable/stats"
                         app:tint="#FFFFFF" />
-
                 </androidx.cardview.widget.CardView>
-
-                <!-- Animated background particles -->
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -61,9 +58,6 @@
                     android:layout_marginTop="90dp"
                     android:gravity="left"
                     android:orientation="vertical">
-
-                    <!-- Glowing profile icon -->
-
 
                     <TextView
                         android:id="@+id/welcomeText"
@@ -86,29 +80,16 @@
                         android:textColor="@color/black"
                         android:textSize="28sp"
                         android:textStyle="bold" />
-
                 </LinearLayout>
 
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/backgroundAnimation"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:alpha="0.3"
-                    app:lottie_autoPlay="true"
-                    app:lottie_loop="true"
-                    app:lottie_rawRes="@raw/icon_particles" />
 
 
-
-                <!-- All other cards are now placed inside the headerCard -->
-
-                <!-- Enhanced Time Tracking Card with Neon Glow -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/timeCard"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
                     android:layout_marginTop="180dp"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginBottom="12dp"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="8dp">
 
@@ -118,7 +99,6 @@
                         android:background="@drawable/time_card_gradient"
                         android:padding="20dp">
 
-                        <!-- Clock icon -->
                         <ImageView
                             android:id="@+id/clockIcon"
                             android:layout_width="26dp"
@@ -155,14 +135,12 @@
                                 android:shadowDx="2"
                                 android:shadowDy="2"
                                 android:shadowRadius="8"
-                                android:text="8h 24m"
+                                android:text="3h 24m"
                                 android:textColor="#FFFFFF"
                                 android:textSize="32sp"
                                 android:textStyle="bold" />
-
                         </LinearLayout>
 
-                        <!-- Progress indicator -->
                         <ProgressBar
                             android:id="@+id/progressRing"
                             style="?android:attr/progressBarStyle"
@@ -171,33 +149,44 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:indeterminate="true" />
-
                     </RelativeLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Simplified Action Cards Grid -->
+                <!-- Analytics Button -->
+                <Button
+                    android:id="@+id/analyticsButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_below="@id/timeCard"
+                    android:backgroundTint="#1A73E8"
+                    android:text="Analytics"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/amaranth" />
+
+                <!-- Action Cards Grid -->
                 <LinearLayout
                     android:id="@+id/actionsGrid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/timeCard"
-                    android:orientation="vertical"
-                    android:layout_marginTop="20dp">
+                    android:layout_below="@id/analyticsButton"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical">
 
-                    <!-- Row 1: Announcements and Live Map -->
+                    <!-- Row 1 -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
                         android:orientation="horizontal">
 
-                        <!-- Announcements Card -->
                         <androidx.cardview.widget.CardView
                             android:id="@+id/announcementsCard"
                             android:layout_width="0dp"
                             android:layout_height="160dp"
-                            android:layout_marginEnd="8dp"
                             android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
                             android:clickable="true"
                             android:focusable="true"
                             app:cardCornerRadius="20dp"
@@ -223,8 +212,7 @@
                                     android:layout_alignParentBottom="true"
                                     android:layout_marginBottom="16dp"
                                     android:gravity="center"
-                                    android:orientation="vertical"
-                                    android:paddingHorizontal="8dp">
+                                    android:orientation="vertical">
 
                                     <TextView
                                         android:id="@+id/announcementsText"
@@ -240,24 +228,22 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:alpha="0.8"
                                         android:fontFamily="@font/amaranth"
                                         android:text="3 New Updates"
                                         android:textColor="#FFFFFF"
-                                        android:textSize="12sp"
-                                        android:alpha="0.8" />
-
+                                        android:textSize="12sp" />
                                 </LinearLayout>
 
                             </RelativeLayout>
                         </androidx.cardview.widget.CardView>
 
-                        <!-- Live Map Card -->
                         <androidx.cardview.widget.CardView
                             android:id="@+id/liveMapCard"
                             android:layout_width="0dp"
                             android:layout_height="160dp"
-                            android:layout_marginStart="8dp"
                             android:layout_weight="1"
+                            android:layout_marginStart="8dp"
                             android:clickable="true"
                             android:focusable="true"
                             app:cardCornerRadius="20dp"
@@ -283,8 +269,7 @@
                                     android:layout_alignParentBottom="true"
                                     android:layout_marginBottom="16dp"
                                     android:gravity="center"
-                                    android:orientation="vertical"
-                                    android:paddingHorizontal="8dp">
+                                    android:orientation="vertical">
 
                                     <TextView
                                         android:id="@+id/liveMapText"
@@ -300,32 +285,30 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:alpha="0.8"
                                         android:fontFamily="@font/amaranth"
                                         android:text="15 Active Users"
                                         android:textColor="#FFFFFF"
-                                        android:textSize="12sp"
-                                        android:alpha="0.8" />
-
+                                        android:textSize="12sp" />
                                 </LinearLayout>
-
                             </RelativeLayout>
+
                         </androidx.cardview.widget.CardView>
 
                     </LinearLayout>
 
-                    <!-- Row 2: Requests and Redeem Points -->
+                    <!-- Row 2 -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <!-- Requests Card -->
                         <androidx.cardview.widget.CardView
                             android:id="@+id/requestsCard"
                             android:layout_width="0dp"
                             android:layout_height="160dp"
-                            android:layout_marginEnd="8dp"
                             android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
                             android:clickable="true"
                             android:focusable="true"
                             app:cardCornerRadius="20dp"
@@ -351,8 +334,7 @@
                                     android:layout_alignParentBottom="true"
                                     android:layout_marginBottom="16dp"
                                     android:gravity="center"
-                                    android:orientation="vertical"
-                                    android:paddingHorizontal="8dp">
+                                    android:orientation="vertical">
 
                                     <TextView
                                         android:id="@+id/requestsText"
@@ -368,27 +350,22 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:alpha="0.8"
                                         android:fontFamily="@font/amaranth"
                                         android:text="2 Pending"
                                         android:textColor="#FFFFFF"
-                                        android:textSize="12sp"
-                                        android:alpha="0.8" />
-
+                                        android:textSize="12sp" />
                                 </LinearLayout>
-
-                                <!-- Notification badge -->
-
-
                             </RelativeLayout>
+
                         </androidx.cardview.widget.CardView>
 
-                        <!-- Redeem Points Card -->
                         <androidx.cardview.widget.CardView
                             android:id="@+id/redeemCard"
                             android:layout_width="0dp"
                             android:layout_height="160dp"
-                            android:layout_marginStart="8dp"
                             android:layout_weight="1"
+                            android:layout_marginStart="8dp"
                             android:clickable="true"
                             android:focusable="true"
                             app:cardCornerRadius="20dp"
@@ -414,8 +391,7 @@
                                     android:layout_alignParentBottom="true"
                                     android:layout_marginBottom="16dp"
                                     android:gravity="center"
-                                    android:orientation="vertical"
-                                    android:paddingHorizontal="8dp">
+                                    android:orientation="vertical">
 
                                     <TextView
                                         android:id="@+id/attendanceGive"
@@ -431,23 +407,19 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:alpha="0.8"
                                         android:fontFamily="@font/amaranth"
                                         android:text="3 given today"
                                         android:textColor="#FFFFFF"
-                                        android:textSize="12sp"
-                                        android:alpha="0.8" />
-
+                                        android:textSize="12sp" />
                                 </LinearLayout>
-
                             </RelativeLayout>
+
                         </androidx.cardview.widget.CardView>
 
                     </LinearLayout>
 
                 </LinearLayout>
-
-                <!-- Floating Action Button with Glow -->
-
 
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
