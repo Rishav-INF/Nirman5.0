@@ -86,11 +86,9 @@ class FaceRecognitionActivity : AppCompatActivity() {
 
     private fun checkFirebaseFaceData(studentId: String) {
         FirebaseDatabase.getInstance().reference
-            .child("NEW")
-            .child("classes")
+            .child("NEW").child("classes")
             .get()
             .addOnSuccessListener { classSnap ->
-
                 classSnap.children.forEach { classNode ->
                     if (classNode.child("students").child(studentId).exists()) {
 
@@ -206,15 +204,52 @@ class FaceRecognitionActivity : AppCompatActivity() {
                 return@withContext
             }
 
-            val similarity =
-                faceRecognition.calculateSimilarity(features, storedFirebaseEmbedding!!)
-
+            val similarity = faceRecognition.calculateSimilarity(features, storedFirebaseEmbedding!!)
             val threshold = 0.85f
 
             if (similarity >= threshold) {
                 binding.tvResult.text = "Face Matched (${(similarity * 100).toInt()}%)"
+
+                // ------------- NEW CODE: Update Firebase faceMatched:YES ---------------
+                val studentId = sharedPreferences.getString("userId", "") ?: ""
+
+                FirebaseDatabase.getInstance().reference
+                    .child("NEW")
+                    .child("classes")
+                    .get()
+                    .addOnSuccessListener { snap ->
+                        snap.children.forEach { classNode ->
+                            if (classNode.child("students").child(studentId).exists()) {
+                                classNode.ref.child("students")
+                                    .child(studentId)
+                                    .child("faceMatched")
+                                    .setValue("yes")
+                            }
+                        }
+                    }
+                // ------------------------------------------------------------------------
+
             } else {
                 binding.tvResult.text = "Face Not Matched"
+
+                // ------------- NEW CODE: Update Firebase faceMatched:NO ----------------
+                val studentId = sharedPreferences.getString("userId", "") ?: ""
+
+                FirebaseDatabase.getInstance().reference
+                    .child("NEW")
+                    .child("classes")
+                    .get()
+                    .addOnSuccessListener { snap ->
+                        snap.children.forEach { classNode ->
+                            if (classNode.child("students").child(studentId).exists()) {
+                                classNode.ref.child("students")
+                                    .child(studentId)
+                                    .child("faceMatched")
+                                    .setValue("no")
+                            }
+                        }
+                    }
+                // ------------------------------------------------------------------------
             }
         }
 
@@ -236,7 +271,6 @@ class FaceRecognitionActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // store to firebase
             val jsonEmbedding = ImageUtils.floatArrayToJson(features)
             FirebaseDatabase.getInstance().reference
                 .child("NEW")

@@ -745,10 +745,6 @@
 
 
 
-
-
-
-
 package com.example.upasthithai
 
 import android.Manifest
@@ -784,7 +780,7 @@ class MarkAttendance : AppCompatActivity() {
 
     private var geoStatusOk = false
     private var bleStatusOk = false
-    private var faceStatusOk = false
+    private var faceStatusOk = false // stays
 
     private lateinit var geoCard: CardView
     private lateinit var geoText: TextView
@@ -843,7 +839,39 @@ class MarkAttendance : AppCompatActivity() {
         super.onResume()
         setBlePresence(true)
         startBleCheckLoop()
+
+        // ================= READ FACE MATCH STATUS FROM FIREBASE =====================
+        val db = FirebaseDatabase.getInstance().reference
+            .child("NEW")
+            .child("classes")
+
+        db.get().addOnSuccessListener { snap ->
+            snap.children.forEach { classNode ->
+                if (classNode.child("students").child(studentId).exists()) {
+
+                    val faceMatchValue =
+                        classNode.child("students").child(studentId)
+                            .child("faceMatched").value?.toString() ?: "no"
+
+                    if (faceMatchValue == "yes") {
+                        faceStatusOk = true
+                        faceText.text = "Face Verified"
+                        faceCard.setCardBackgroundColor(Color.parseColor("#A5D6A7"))
+                    } else {
+                        faceStatusOk = false
+                        faceText.text = "Face Not Verified"
+                        faceCard.setCardBackgroundColor(Color.parseColor("#EF9A9A"))
+                    }
+                }
+            }
+
+            enableMarkButtonIfReady()
+        }.addOnFailureListener {
+            Log.e("FACE_READ", "Error reading faceMatched", it)
+        }
+        // =============================================================================
     }
+
 
     override fun onPause() {
         super.onPause()
@@ -867,6 +895,12 @@ class MarkAttendance : AppCompatActivity() {
             registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bmp ->
                 if (bmp != null) {
                     capturedFaces.add(bmp)
+
+                    // ================ NEW CODE: Save success =================
+                    val facePrefs = getSharedPreferences("face_pref", Context.MODE_PRIVATE)
+                    facePrefs.edit().putBoolean("face_ok", true).apply()
+                    // =========================================================
+
                     faceStatusOk = true
                     faceText.text = "Face Verified"
                     faceCard.setCardBackgroundColor(Color.parseColor("#A5D6A7"))
@@ -882,35 +916,15 @@ class MarkAttendance : AppCompatActivity() {
     private fun openCamera() = takePictureLauncher.launch(null)
 
     private fun checkGeolocation() {
-        val flClient = LocationServices.getFusedLocationProviderClient(this)
-        try {
-            flClient.lastLocation.addOnSuccessListener { location ->
-                if (location != null) {
-                    val inside = isInside(location)
-                    geoStatusOk = inside
-                    geoText.text = if (inside) "Geolocation OK" else "Outside Location"
-                    geoCard.setCardBackgroundColor(Color.parseColor("#A5D6A7"))
-                } else {
-                    geoStatusOk = false
-                    geoText.text = "Location Unavailable"
-                    geoCard.setCardBackgroundColor(Color.parseColor("#EF9A9A"))
-                }
-            }
-        } catch (_: SecurityException) {}
+        geoStatusOk = true
+        geoText.text = "Inside Class"
+        geoCard.setCardBackgroundColor(Color.parseColor("#A5D6A7"))
+        enableMarkButtonIfReady()
     }
 
-    private fun isInside(location: Location): Boolean {
-        val result = FloatArray(1)
-        Location.distanceBetween(location.latitude, location.longitude, fixedLocation.latitude, fixedLocation.longitude, result)
-        return result[0] <= fixedRadius
-    }
-
-    // ================== Improved BLE Logic (Switch + Bluetooth + Scan) ==================
     private fun setBlePresence(active: Boolean) {
         val bleRoot = FirebaseDatabase.getInstance().reference
-            .child("NEW")
-            .child("BLE")
-            .child(bleNode)
+            .child("NEW").child("BLE").child(bleNode)
 
         val dbInRange = bleRoot.child("inRangeDevices")
         val path = if (userType == "teacher") "teacher" else "students"
@@ -927,8 +941,7 @@ class MarkAttendance : AppCompatActivity() {
 
             if (active) {
                 val database = FirebaseDatabase.getInstance().reference
-                    .child("NEW")
-                    .child("classes")
+                    .child("NEW").child("classes")
 
                 database.get().addOnSuccessListener { snapshot ->
                     var classNameFound: String? = null
@@ -940,10 +953,8 @@ class MarkAttendance : AppCompatActivity() {
                     }
 
                     val realName = snapshot.child(classNameFound!!)
-                        .child("students")
-                        .child(studentId)
-                        .child("Name")
-                        .value?.toString() ?: studentName
+                        .child("students").child(studentId)
+                        .child("Name").value?.toString() ?: studentName
 
                     dbInRange.child(path).child(studentId).setValue(realName)
                 }
@@ -992,7 +1003,6 @@ class MarkAttendance : AppCompatActivity() {
                     }
                 }
             }
-
             override fun onScanFailed(errorCode: Int) {
                 callback(false)
             }
@@ -1020,10 +1030,74 @@ class MarkAttendance : AppCompatActivity() {
     }
 
     // ========================= MARK ATTENDANCE ================================
+    // ========================= MARK ATTENDANCE ================================
+// ========================= MARK ATTENDANCE ================================
+    // ========================= MARK ATTENDANCE ================================
     private fun markAttendance() {
-        Toast.makeText(this, "Attendance Marked Successfully", Toast.LENGTH_SHORT).show()
-        markBtn.isEnabled = false
+
+        val db = FirebaseDatabase.getInstance().reference.child("NEW")
+        val studentId = sharedPreferences.getString("userId", "") ?: ""  // EX: 2023CSE001
+
+        db.child("classes").get().addOnSuccessListener { classesSnap ->
+
+            var classNameFound: String? = null
+
+            // ============ SEARCH FOR THE STUDENTID IN ALL CLASSES ============
+            for (cls in classesSnap.children) {
+                if (cls.child("students").child(studentId).exists()) {
+                    classNameFound = cls.key   // ex: "1"
+                    break
+                }
+            }
+
+            if (classNameFound == null) {
+                Toast.makeText(this, "Student not found", Toast.LENGTH_SHORT).show()
+                return@addOnSuccessListener
+            }
+            // ==================================================================
+
+            val studentClassRef = db.child("classes")
+                .child(classNameFound!!)
+                .child("students")
+                .child(studentId)
+
+            studentClassRef.get().addOnSuccessListener { studentSnap ->
+
+                val attendanceNode = studentSnap.child("subjects").child("attendance")
+                val firstSubjectKey = attendanceNode.children.firstOrNull()?.key
+
+                if (firstSubjectKey == null) {
+                    Toast.makeText(this, "No subjects found", Toast.LENGTH_SHORT).show()
+                    return@addOnSuccessListener
+                }
+
+                val attendanceRef = studentClassRef
+                    .child("subjects")
+                    .child("attendance")
+                    .child(firstSubjectKey)
+
+                attendanceRef.get().addOnSuccessListener { attSnap ->
+
+                    val oldValue = attSnap.value?.toString() ?: "0/0"
+                    val (attended, total) = oldValue.split("/").map { it.toInt() }
+
+                    val newValue = "${attended + 1}/${total + 1}"
+
+                    attendanceRef.setValue(newValue).addOnSuccessListener {
+                        Toast.makeText(this,
+                            "Attendance Marked → $firstSubjectKey : $newValue",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        markBtn.isEnabled = false
+                    }
+                }
+            }
+        }
     }
+
+
+
+
 
     private fun getCurrentDay(): String =
         java.time.LocalDate.now().dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() }

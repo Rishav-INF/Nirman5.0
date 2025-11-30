@@ -33,11 +33,7 @@ private const val CHANNEL_ID = "location_updates"
 private const val FIXED_LOCATION_RADIUS_METERS = 30f
 
 //private val FIXED_LOCATION = LatLng(22.260365, 84.889434) // Example office location  22.260365
-private val FIXED_LOCATION_1 = LatLng(20.350313, 85.805916)
-private val FIXED_LOCATION_2 = LatLng(20.351197, 85.805483)
-private val FIXED_LOCATION_3 = LatLng(20.351604,85.805821)
-private val FIXED_LOCATION_4 = LatLng(20.350877,85.806931)
-private val FIXED_LOCATION_5 = LatLng(20.351784,85.806511)
+private val FIXED_LOCATION = LatLng(20.350313, 85.805916)
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
@@ -77,47 +73,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             mMap.isMyLocationEnabled = true
         }
 
-        mMap.addMarker(MarkerOptions().position(FIXED_LOCATION_1).title("Office Location"))
+        mMap.addMarker(MarkerOptions().position(FIXED_LOCATION).title("Office Location"))
         drawCircleAroundFixedLocation()
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(FIXED_LOCATION_1, 17f))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(FIXED_LOCATION, 17f))
     }
 
     private fun drawCircleAroundFixedLocation() {
         val circle_1 = CircleOptions()
-            .center(FIXED_LOCATION_1)
-            .radius(FIXED_LOCATION_RADIUS_METERS.toDouble())
-            .strokeColor(0xFFFF0000.toInt())
-            .fillColor(0x40FF0000)
-            .strokeWidth(5f)
-        val circle_2 = CircleOptions()
-            .center(FIXED_LOCATION_2)
-            .radius(FIXED_LOCATION_RADIUS_METERS.toDouble())
-            .strokeColor(0xFFFF0000.toInt())
-            .fillColor(0x40FF0000)
-            .strokeWidth(5f)
-        val circle_3 = CircleOptions()
-            .center(FIXED_LOCATION_3)
-            .radius(FIXED_LOCATION_RADIUS_METERS.toDouble())
-            .strokeColor(0xFFFF0000.toInt())
-            .fillColor(0x40FF0000)
-            .strokeWidth(5f)
-        val circle_4 = CircleOptions()
-            .center(FIXED_LOCATION_4)
-            .radius(FIXED_LOCATION_RADIUS_METERS.toDouble())
-            .strokeColor(0xFFFF0000.toInt())
-            .fillColor(0x40FF0000)
-            .strokeWidth(5f)
-        val circle_5 = CircleOptions()
-            .center(FIXED_LOCATION_5)
+            .center(FIXED_LOCATION)
             .radius(FIXED_LOCATION_RADIUS_METERS.toDouble())
             .strokeColor(0xFFFF0000.toInt())
             .fillColor(0x40FF0000)
             .strokeWidth(5f)
         mMap.addCircle(circle_1)
-        mMap.addCircle(circle_2)
-        mMap.addCircle(circle_3)
-        mMap.addCircle(circle_4)
-        mMap.addCircle(circle_5)
     }
 
     private fun setupLocationRequest() {
@@ -148,7 +116,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val distance = FloatArray(1)
         Location.distanceBetween(
             location.latitude, location.longitude,
-            FIXED_LOCATION_1.latitude, FIXED_LOCATION_1.longitude,
+            FIXED_LOCATION.latitude, FIXED_LOCATION.longitude,
             distance
         )
 
